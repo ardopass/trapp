@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ardo.core.dao.TicketDao" >
+
+    <resultMap type="UserTicket" id="userTicket">
+        <result column="id" property="ticketId"/>
+        <result column="spot_id" property="spotId"/>
+        <result column="spot_name" property="spotName"/>
+        <result column="ticket_fee" property="ticketFee"/>
+        <result column="ticket_num" property="ticketNum"/>
+        <result column="buy_time" property="ticketBuyTime"/>
+    </resultMap>
+
+    <insert id="buyTicket">
+        insert into t_buy_ticket(user_id, spot_id ,ticket_fee, ticket_num, buy_time, state)
+        values(#{reqTicket.buyUserId}, #{reqTicket.buySpotId}, #{reqTicket.buyFee}, #{reqTicket.ticketNum}, now(), '1')
+    </insert>
+
+    <select id="queryUserTicketList" parameterType="java.lang.String" resultMap="userTicket">
+        select a.id,
+                a.spot_id,
+                b.name as spot_name,
+                a.ticket_fee,
+                a.ticket_num,
+                date_format(a.buy_time,'%Y-%m-%d %H:%i:%s') as buy_time
+        from t_buy_ticket a, t_spot_info b
+        where a.spot_id=b.id
+            and user_id = #{userId}
+        order by buy_time desc
+
+    </select>
+
+
+</mapper>

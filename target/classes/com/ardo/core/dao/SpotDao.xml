@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ardo.core.dao.SpotDao" >
+
+    <resultMap type="SpotInfo" id="spotInfo">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="descinfo" property="descInfo"/>
+        <result column="opentime" property="openTime"/>
+        <result column="ticket_price" property="ticketPrice"/>
+        <result column="address" property="address"/>
+        <result column="telephone" property="telephone"/>
+        <result column="traffic_info" property="trafficInfo"/>
+        <result column="tip_info" property="tipInfo"/>
+        <result column="create_time" property="createTime"/>
+        <result column="sortorder" property="sortorder"/>
+        <result column="short_pic_url" property="shortPicUrl"/>
+        <result column="state" property="state"/>
+    </resultMap>
+
+    <resultMap type="SpotDetailPic" id="spotDetailPic">
+        <result column="id" property="id"/>
+        <result column="descinfo" property="descInfo"/>
+        <result column="sortorder" property="sortorder"/>
+        <result column="pic_url" property="picUrl"/>
+    </resultMap>
+
+    <resultMap type="GuideSimInfo" id="guideSimInfo">
+        <result column="id" property="id"/>
+        <result column="title" property="guideTitle"/>
+        <result column="create_time" property="publishTime"/>
+    </resultMap>
+
+    <resultMap type="GuideInfo" id="guideInfo">
+        <result column="id" property="id"/>
+        <result column="spot_id" property="linkId"/>
+        <result column="spot_name" property="linkName"/>
+        <result column="title" property="guideTitle"/>
+        <result column="create_time" property="createTime"/>
+        <result column="descinfo" property="guideDetail"/>
+        <result column="userlike" property="ifCurUserLike"/>
+        <result column="user_id" property="createUserId"/>
+        <result column="user_name" property="createUserName"/>
+    </resultMap>
+
+    <sql id="selectItem">
+                id,
+                name,
+                descinfo,
+                opentime,
+                ticket_price,
+                address,
+                telephone,
+                traffic_info,
+                tip_info,
+                create_time,
+                sortorder,
+                short_pic_url,
+                state
+    </sql>
+
+    <select id="querySpotListForIndex" resultMap="spotInfo">
+        select
+        <include refid="selectItem"/>
+        from t_spot_info
+        where state = 1
+        limit #{reqSpot.start}, #{reqSpot.end}
+    </select>
+
+    <select id="querySpotListForIndexCount" resultType="Integer">
+        select count(1) from t_spot_info
+        where state = 1
+    </select>
+
+    <select id="querySpotDetail" resultMap="spotInfo">
+        select
+        <include refid="selectItem"/>
+        from t_spot_info
+        where state = 1
+        and id = #{spot.id}
+    </select>
+
+    <select id="querySpotLinkPicList" resultMap="spotDetailPic">
+        select id, descinfo, pic_url, sortorder
+        from t_spot_detail_pic
+        where state = 1 and spot_id = #{sdp.spotId}
+    </select>
+
+    <select id="querySpotLinkGuideList" resultMap="guideSimInfo">
+        select a.id,
+                a.title,
+                date_format(a.create_time,'%Y-%m-%d %H:%i:%s') as create_time
+        from t_user_travel_guide a
+        where state = 1
+          and spot_id = #{query.spotId}
+        order by create_time desc
+    </select>
+
+    <select id="querySpotLinkGuideDetail" resultMap="guideInfo">
+        select a.id,
+                a.title,
+                a.descinfo,
+                a.spot_id,
+                date_format(a.create_time,'%Y-%m-%d %H:%i:%s') as create_time,
+                case when ifnull(b.user_id, 'false')='false' then 'false' else 'true' end as userlike,
+                c.name as spot_name,
+                a.user_id as user_id,
+                d.username as user_name
+        from t_user_travel_guide a left join t_user_like_guide_rel b
+          on a.id = b.guide_id
+          and b.user_id = #{query.userId}, t_spot_info c, t_user d
+        where a.state = 1
+          and a.spot_id = c.id
+          and a.user_id = d.id
+          and a.id = #{query.guideId}
+    </select>
+
+    <select id="queryLikeGuideList" resultMap="guideInfo">
+          select a.id,
+                a.title,
+                a.descinfo,
+                a.spot_id,
+                date_format(a.create_time,'%Y-%m-%d %H:%i:%s') as create_time,
+                case when ifnull(b.user_id, 'false')='false' then 'false' else 'true' end as userlike,
+                c.name as spot_name,
+                a.user_id as user_id,
+                d.username as user_name
+        from t_user_travel_guide a , t_user_like_guide_rel b,
+           t_spot_info c, t_user d
+        where a.state = 1
+          and a.spot_id = c.id
+          and a.user_id = d.id and a.id = b.guide_id
+          and b.user_id = #{userId}
+    </select>
+
+    <insert id="userGuideSubmit">
+        insert into t_user_travel_guide(user_id, spot_id, title, descinfo, create_time, state)
+        values(#{reqGuideDetailSubmit.userId}, #{reqGuideDetailSubmit.spotId}, #{reqGuideDetailSubmit.guideTitle}, #{reqGuideDetailSubmit.guideDetail}, now(), 1)
+    </insert>
+
+</mapper>

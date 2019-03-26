@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<!-- 自定义全局变量设置 -->
+	<properties>
+		<!-- 本地测试 -->
+		<property name="auth_db_user" value=""/>
+		<!-- universe 权限表用户 -->
+	<!--<property name="auth_db_user" value="metadb."/>-->
+</properties>
+
+<settings>
+    <setting name="cacheEnabled" value="false" />
+    <setting name="useGeneratedKeys" value="true" />
+    <setting name="defaultExecutorType" value="REUSE" />
+    <setting name="lazyLoadingEnabled" value="false" />
+    <setting name="autoMappingBehavior" value="FULL"/>
+</settings>
+
+<!-- 配置别名   以包的形势进行配置 -->
+	<typeAliases>
+		<package name="com.ardo.core.bean"/>
+	</typeAliases>
+	
+	<plugins>
+		<plugin interceptor="com.ardo.common.logs.SqlInterceptor"></plugin>
+		<!--<plugin interceptor="com.huawei.common.dypage.PageHelper"></plugin>-->
+	</plugins>
+	
+	<!-- Mapper 配置 如果Mapper与接口在同一包下,下面内容可不配置-->
+	<mappers>
+		<package name="com.ardo.core.dao"/>
+	</mappers>
+
+</configuration>

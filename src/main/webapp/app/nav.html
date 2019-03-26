@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<!--自适应手机屏幕-->  
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">  
+    <!--适应苹果手机-->  
+    <meta name="apple-mobile-web-app-capable" content="yes">  
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">  
+    <!--不要被百度转码-->  
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>  
+	<meta name="keywords" content="百度地图,百度地图API，百度地图自定义工具，百度地图所见即所得工具" />
+	<meta name="description" content="百度地图API自定义地图，帮助用户在可视化操作下生成百度地图" />
+	
+<title>导航路线查询</title>
+<!--引用百度地图API-->
+<style type="text/css">
+    body, html{width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
+	#my-search{height:60px;width:100%;}
+	#l-map{height:300px;width:100%;}
+	#r-result,#r-result table{width:100%;font-size:12px;}
+	
+	.same{
+		padding: 0;
+		margin: 0;
+		box-sizing: border-box;
+		border: solid 1px #F0F8FF;
+		height: 30px;
+	}
+	.div{
+		width: 300px;
+		height: 32px;
+		border: solid 1px #000000;
+	}
+	.text{
+		width: 78%;
+		/**background-color: rgba(147, 147, 147, 0.44);**/
+	}
+	.btn{
+		width: 20%;
+		background-color: #59b3f3;
+	}
+
+</style>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=MAeYdq5qRBcHmY0vrNH82a81"></script>
+	<script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="my-search">
+		<input type="text" id="start" placeholder="起点位置" style="height: 25px;width:100%;border:solid 1px #F0F8FF;">
+		<input type="text" id="end" placeholder="目的地" class="same text" style="">
+		<button class="same btn" style="" onclick="clickSearch()">查询</button>
+	</div>
+	<div id="l-map"></div>
+	<div id="r-result"></div>
+</body>
+<script type="text/javascript">
+	// 百度地图API功能
+	var map = new BMap.Map("l-map");
+	map.centerAndZoom(new BMap.Point(118.105445,24.442475), 12);
+
+	var transit = new BMap.TransitRoute(map, {
+		renderOptions: {map: map, panel: "r-result"}
+	});
+	//transit.search("厦门软件学院", "厦门大学");
+	
+	function getURLParameter(name) {
+	    return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
+		// var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        // var r = window.location.search.substr(1).match(reg);
+        // alert(JSON.stringify(r));
+        // if(r!=null)return  unescape(r[2]); return null;
+	}
+	var start = getURLParameter('start');
+	var end = getURLParameter('end');
+	//console.log('start=' + start);
+	//console.log('end=' + end);
+
+	//查询路线，地图加载
+	function mapLoad(start, end){
+        transit.search(start, end);
+	}
+
+	//查询
+	function clickSearch(){
+        var mystart = document.getElementById('start').value;
+        var myend = document.getElementById('end').value;
+        mapLoad(mystart, myend)
+	}
+
+	//设置起始、结束文字
+	function setTitle(start, end){
+        document.getElementById('start').value = start;
+        document.getElementById('end').value = end;
+	}
+
+    setTitle(start, end);
+    mapLoad(start, end);
+
+</script>
+
+</html>

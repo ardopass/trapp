@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ardo.core.dao.CommentDao" >
+
+    <resultMap type="CommentInfo" id="commentInfo">
+        <result column="id" property="id"/>
+        <result column="c_type" property="itemType"/>
+        <result column="link_id" property="itemLinkId"/>
+        <result column="c_content" property="comContent"/>
+        <result column="c_user_id" property="userId"/>
+        <result column="c_time" property="comTime"/>
+        <result column="user_name" property="userName"/>
+    </resultMap>
+
+    <resultMap type="CommonReplay" id="commonReplay">
+        <result column="id" property="id"/>
+        <result column="replay_content" property="replayContent"/>
+        <result column="user_id" property="userId"/>
+        <result column="user_name" property="userName"/>
+        <result column="replay_time" property="replayTime"/>
+    </resultMap>
+
+    <sql id="selectItem">
+                a.id,
+                a.c_type,
+                a.link_id,
+                a.c_content,
+                date_format(a.c_time,'%Y-%m-%d %H:%i:%s') as c_time,
+                a.c_user_id,
+                a.state,
+                b.username as user_name
+    </sql>
+
+    <select id="queryCommentList" resultMap="commentInfo">
+        select
+        <include refid="selectItem"/>
+        from t_comment_info a, t_user b
+        where a.state = 1
+          and a.c_user_id = b.id
+          and a.link_id = #{reqComment.linkId}
+          and a.c_type = #{reqComment.type}
+        order by a.c_time desc
+        limit #{reqComment.start}, #{reqComment.end}
+    </select>
+
+    <select id="queryCommentListCount" resultType="Integer">
+        select count(1) from t_comment_info a, t_user b
+        where a.state = 1
+          and a.c_user_id = b.id
+          and a.link_id = #{reqComment.linkId}
+          and a.c_type = #{reqComment.type}
+        order by a.c_time desc
+    </select>
+
+    <insert id="submitComment">
+        insert into t_comment_info(c_type, link_id, c_content, c_time, c_user_id, state)
+        values(#{reqSummitComment.type}, #{reqSummitComment.linkId}, #{reqSummitComment.content}, now(),
+          #{reqSummitComment.userId}, 1)
+    </insert>
+
+    <insert id="submitReplay">
+        insert into t_comment_replay(comment_id, replay_content, user_id, replay_time)
+        values(#{reqSummitComment.linkId}, #{reqSummitComment.content}, #{reqSummitComment.userId}, now())
+    </insert>
+
+    <select id="queryReplayList" resultMap="commonReplay">
+        select a.id, a.replay_content, a.user_id, b.username as user_name, date_format(a.replay_time,'%Y-%m-%d %H:%i:%s') as replay_time
+        from t_comment_replay a, t_user b
+        where a.user_id = b.id and a.comment_id = #{commentId}
+        order by a.replay_time desc
+    </select>
+
+</mapper>

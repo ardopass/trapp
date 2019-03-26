@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ardo.core.dao.UserDao" >
+
+    <resultMap type="UserInfo" id="userInfo">
+        <result column="id" property="id"/>
+        <result column="username" property="userName"/>
+        <result column="loginname" property="loginName"/>
+        <result column="sex" property="sex"/>
+        <result column="age" property="age"/>
+        <result column="account_fee" property="accountFee"/>
+        <result column="pic_url" property="headPicUrl"/>
+        <result column="state" property="state"/>
+        <result column="password" property="passWord"/>
+        <result column="cus_question" property="cusQuestion"/>
+        <result column="cus_answer" property="cusAnswer"/>
+    </resultMap>
+
+    <insert id="log">
+        insert into t_log(user_id, user_name, log_model_type, log_content, terminal_info, opt_time)
+        values(#{log.userId}, #{log.userName}, #{log.logModelType}, #{log.reqContent}, #{log.terminalInfo}, now())
+    </insert>
+
+    <insert id="userLikeGuideFollow">
+        insert into t_user_like_guide_rel(user_id, guide_id)
+        values(#{reqUserGuideSubmit.userId}, #{reqUserGuideSubmit.guideId})
+    </insert>
+
+    <delete id="userLikeGuideCancel">
+        delete from t_user_like_guide_rel
+        where user_id = #{reqUserGuideSubmit.userId} and guide_id = #{reqUserGuideSubmit.guideId}
+    </delete>
+
+    <select id="ifUserAlreadyFollowGuide" resultType="java.lang.Integer">
+        select count(1) from t_user_like_guide_rel
+        where user_id = #{reqUserGuideSubmit.userId} and guide_id = #{reqUserGuideSubmit.guideId}
+    </select>
+
+    <update id="updateUserHeadPic">
+        update t_user set pic_url = #{picUrl}
+        where loginname = #{workNo}
+    </update>
+
+    <select id="queryUserHeadPic" parameterType="java.lang.String" resultType="String">
+        select pic_url
+        from t_user
+        where loginname = #{workNo}
+    </select>
+
+    <select id="queryUserInfo" resultMap="userInfo">
+        select CONCAT(id,'') as id,
+                username,
+                loginname,
+                password,
+                sex,
+                age,
+                date_format(create_time,'%Y-%m-%d %H:%i:%s') as create_time,
+                account_fee,
+                pic_url,
+                state,
+                cus_question,
+                cus_answer
+        from t_user
+        where loginname = #{reqUser.loginName}
+    </select>
+
+    <select id="queryUserAccountFee" parameterType="java.lang.String" resultType="String">
+        select CONCAT(account_fee,'') as accountFee
+        from t_user
+        where 1=1
+        <if test="null!=workNo and ''.toString()!=workNo">
+            and loginname = #{workNo}
+        </if>
+        <if test="null!=userId and ''.toString()!=userId">
+            and id = #{userId}
+        </if>
+
+    </select>
+
+    <update id="updateAccountFee">
+        update t_user set account_fee = #{fee}
+        where id = #{userId}
+    </update>
+
+    <insert id="register">
+        insert into t_user(username, loginname, password, sex, age, create_time, account_fee, pic_url, state, cus_question, cus_answer)
+        values(#{userInfo.userName}, #{userInfo.loginName}, #{userInfo.passWord}, #{userInfo.sex}, #{userInfo.age}, now(),
+            #{userInfo.accountFee}, #{userInfo.headPicUrl}, #{userInfo.state}, #{userInfo.cusQuestion}, #{userInfo.cusAnswer})
+    </insert>
+
+
+
+</mapper>
