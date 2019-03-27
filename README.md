@@ -26,3 +26,4 @@ https://www.showdoc.cc/trapp
 
 [5-1]接口是在安卓端通过url加载H5
 47.96.191.235:8899/trapp/app/nav.html?start=国际机场&end=厦门大学
+ ![image](https://github.com/ardopass/trapp/blob/master/nav_cutpic.png)
