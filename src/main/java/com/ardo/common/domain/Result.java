@@ -5,7 +5,7 @@ package com.ardo.common.domain;
  */
 public class Result<T> {
     /* 错误码 */
-    private Integer code;
+    private Integer code;//0 -1
 
     /* 提示信息 */
     private String msg;

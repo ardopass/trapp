@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 
+
+/**
+ * 购票控制层
+ */
 @Controller
 @RequestMapping("/ticket")
 public class TicketController {

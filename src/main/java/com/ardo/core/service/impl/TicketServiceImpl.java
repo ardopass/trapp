@@ -36,7 +36,7 @@ public class TicketServiceImpl implements TicketService {
         String accFee = userDao.queryUserAccountFee("", reqTicket.getBuyUserId());
         System.out.println("[1]accFee=" + accFee);
         BigDecimal accFeeDec = new BigDecimal(accFee);
-        BigDecimal buyFeeDec = new BigDecimal(reqTicket.getBuyFee());
+        BigDecimal buyFeeDec = (new BigDecimal(reqTicket.getBuyFee() )).multiply(new BigDecimal(reqTicket.getTicketNum()));
         accFeeDec=accFeeDec.setScale(2, BigDecimal.ROUND_DOWN); //小数位 直接舍去，不会四舍五入
         buyFeeDec=buyFeeDec.setScale(2, BigDecimal.ROUND_DOWN); //小数位 直接舍去，不会四舍五入
         if(accFeeDec.compareTo(buyFeeDec) >= 0){//返回值 -1 小于 0 等于 1 大于

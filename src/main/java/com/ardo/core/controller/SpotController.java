@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+
+/**
+ * 景区景点控制类入口
+ */
 @Controller
 @RequestMapping("/spot")
 public class SpotController {

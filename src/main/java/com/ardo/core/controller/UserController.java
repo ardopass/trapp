@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 
+/**
+ * 用户控制层
+ */
 @Controller
 @RequestMapping("/user")
 public class UserController {
